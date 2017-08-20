@@ -8,8 +8,8 @@ Preferrably, this should not be used in favour of the RFC drafts for the new [AN
 # Usage
 
 ```
-$ go get https://github.com/coredns/coredns
-$ go get https://github.com/serverwentdown/alias
+$ go get github.com/coredns/coredns
+$ go get github.com/serverwentdown/alias
 $ cd $GOPATH/src/github.com/coredns/coredns
 $ vim middleware.cfg
 # Add the line 145:alias:github.com/serverwentdown/alias
