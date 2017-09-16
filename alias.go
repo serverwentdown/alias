@@ -1,22 +1,22 @@
 package alias
 
 import (
-	"github.com/coredns/coredns/middleware"
+	"github.com/coredns/coredns/plugin"
 
 	"github.com/miekg/dns"
 
 	"golang.org/x/net/context"
 )
 
-// Rewrite is middleware to rewrite requests internally before being handled.
+// Rewrite is plugin to rewrite requests internally before being handled.
 type Alias struct {
-	Next middleware.Handler
+	Next plugin.Handler
 }
 
-// ServeDNS implements the middleware.Handler interface.
+// ServeDNS implements the plugin.Handler interface.
 func (al Alias) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	mw := NewResponseModifier(w)
-	return middleware.NextOrFailure(al.Name(), al.Next, ctx, mw, r)
+	return plugin.NextOrFailure(al.Name(), al.Next, ctx, mw, r)
 }
 
 // Name implements the Handler interface.

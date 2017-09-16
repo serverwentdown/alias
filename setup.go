@@ -2,7 +2,7 @@ package alias
 
 import (
 	"github.com/coredns/coredns/core/dnsserver"
-	"github.com/coredns/coredns/middleware"
+	"github.com/coredns/coredns/plugin"
 
 	"github.com/mholt/caddy"
 )
@@ -17,10 +17,10 @@ func init() {
 func setup(c *caddy.Controller) error {
 	c.Next()
 	if c.NextArg() {
-		return middleware.Error("alias", c.ArgErr())
+		return plugin.Error("alias", c.ArgErr())
 	}
 
-	dnsserver.GetConfig(c).AddMiddleware(func(next middleware.Handler) middleware.Handler {
+	dnsserver.GetConfig(c).AddPlugin(func(next plugin.Handler) plugin.Handler {
 		return Alias{Next: next}
 	})
 
