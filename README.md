@@ -1,7 +1,7 @@
 
-# Alias middleware
+# Alias plugin
 
-This middleware eliminates CNAME records from zone apex by making the subsequent resolved records look like they belong to the zone apex. This behaves similarily to [CloudFlare's Zone Flattening](https://support.cloudflare.com/hc/en-us/articles/200169056-CNAME-Flattening-RFC-compliant-support-for-CNAME-at-the-root).
+This plugin eliminates CNAME records from zone apex by making the subsequent resolved records look like they belong to the zone apex. This behaves similarily to [CloudFlare's Zone Flattening](https://support.cloudflare.com/hc/en-us/articles/200169056-CNAME-Flattening-RFC-compliant-support-for-CNAME-at-the-root).
 
 Preferrably, this should not be used in favour of the RFC drafts for the new [ANAME](https://tools.ietf.org/html/draft-ietf-dnsop-aname-00) records, but the DNS library used by CoreDNS does not support ANAME records yet. 
 
@@ -11,14 +11,14 @@ Preferrably, this should not be used in favour of the RFC drafts for the new [AN
 $ go get github.com/coredns/coredns
 $ go get github.com/serverwentdown/alias
 $ cd $GOPATH/src/github.com/coredns/coredns
-$ vim middleware.cfg
+$ vim plugin.cfg
 # Add the line 205:alias:github.com/serverwentdown/alias
 $ go generate
 $ go build
 $ ./coredns -plugins | grep alias
 ```
 
-This middleware only works with the `file` middleware with `upstream` set, or when A or AAAA records exist alongside the CNAME record.
+This plugin only works with the `file` middleware with `upstream` set, or when A or AAAA records exist alongside the CNAME record.
 
 ```
 example.com {
