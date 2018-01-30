@@ -38,8 +38,7 @@ func NewResponseModifier(w dns.ResponseWriter) *ResponseModifier {
 func (r *ResponseModifier) WriteMsg(res *dns.Msg) error {
 	// Guess zone based on authority section.
 	var zone string
-	for i := 0; i < len(res.Ns); i++ {
-		rr := res.Ns[i]
+	for _, rr := range res.Ns {
 		if rr.Header().Rrtype == dns.TypeNS {
 			zone = rr.Header().Name
 		}
@@ -47,8 +46,7 @@ func (r *ResponseModifier) WriteMsg(res *dns.Msg) error {
 
 	// Find and delete CNAME record on that zone, storing the canonical name.
 	var cname string
-	for i := 0; i < len(res.Answer); i++ {
-		rr := res.Answer[i]
+	for i, rr := range res.Answer {
 		if rr.Header().Rrtype == dns.TypeCNAME && rr.Header().Name == zone {
 			cname = rr.(*dns.CNAME).Target
 			// Remove the CNAME record
@@ -58,8 +56,7 @@ func (r *ResponseModifier) WriteMsg(res *dns.Msg) error {
 	}
 
 	// Rename all the records with the above canonical name to the zone name
-	for i := 0; i < len(res.Answer); i++ {
-		rr := res.Answer[i]
+	for _, rr := range res.Answer {
 		if rr.Header().Name == cname {
 			rr.Header().Name = zone
 		}
