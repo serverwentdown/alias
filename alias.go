@@ -4,6 +4,7 @@ import (
 	"github.com/coredns/coredns/plugin"
 
 	"github.com/miekg/dns"
+	"math"
 
 	"golang.org/x/net/context"
 )
@@ -33,6 +34,13 @@ func NewResponseModifier(w dns.ResponseWriter) *ResponseModifier {
 	}
 }
 
+func min(a, b uint32) uint32 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
 // WriteMsg records the status code and calls the
 // underlying ResponseWriter's WriteMsg method.
 func (r *ResponseModifier) WriteMsg(res *dns.Msg) error {
@@ -46,24 +54,26 @@ func (r *ResponseModifier) WriteMsg(res *dns.Msg) error {
 
 	// Find and delete CNAME record on that zone, storing the canonical name.
 	var (
-		cname string
-		ttl   uint32
+		cname string = zone
+		ttl   uint32 = math.MaxUint32
 	)
-	for i, rr := range res.Answer {
-		if rr.Header().Rrtype == dns.TypeCNAME && rr.Header().Name == zone {
+	for i := 0; i < len(res.Answer); {
+		rr := res.Answer[i]
+		if rr.Header().Rrtype == dns.TypeCNAME && rr.Header().Name == cname {
 			cname = rr.(*dns.CNAME).Target
-			ttl = rr.(*dns.CNAME).Header().Ttl
+			ttl = min(ttl, rr.(*dns.CNAME).Header().Ttl)
 			// Remove the CNAME record
 			res.Answer = append(res.Answer[:i], res.Answer[i+1:]...)
-			break
+			continue
 		}
+		i++
 	}
 
 	// Rename all the records with the above canonical name to the zone name
 	for _, rr := range res.Answer {
 		if rr.Header().Name == cname {
 			rr.Header().Name = zone
-			rr.Header().Ttl = ttl
+			rr.Header().Ttl = min(ttl, rr.Header().Ttl)
 		}
 	}
 
