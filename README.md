@@ -44,7 +44,7 @@ into
 example.com.		3600	IN	A	127.0.0.1
 ```
 
-See [`examples/`](examples/) for a more extensive example. 
+See [`example/`](example/) for a more extensive example. 
 
 ## Installation
 
