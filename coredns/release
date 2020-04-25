@@ -39,25 +39,47 @@ git push --tags
 
 echo "Building coredns..."
 
+matrix=(
+	"GOOS=linux GOARCH=amd64"
+	"GOOS=linux GOARCH=arm64"
+	"GOOS=linux GOARCH=arm"
+	"GOOS=darwin GOARCH=amd64"
+	"GOOS=windows GOARCH=amd64 EXT=.exe"
+)
+
 export CGO_ENABLED=0
-GOOS=linux GOARCH=amd64 go build -o coredns_${GOOS}_${GOARCH}
-GOOS=linux GOARCH=arm64 go build -o coredns_${GOOS}_${GOARCH}
-GOOS=linux GOARCH=armv6 go build -o coredns_${GOOS}_${GOARCH}
-GOOS=linux GOARCH=armv7 go build -o coredns_${GOOS}_${GOARCH}
-GOOS=mac GOARCH=amd64 go build -o coredns_${GOOS}_${GOARCH}
-GOOS=windows GOARCH=amd64 go build -o coredns_${GOOS}_${GOARCH}
+for m in "${matrix[@]}"; do
+	export GOOS= GOARCH= EXT=
+	export $m
+	go build -o coredns_${GOOS}_${GOARCH}${EXT}
+done
 
 echo "Uploading release..."
 
 RELEASE="$GIT_TAG"
 BODY="$(cat go.mod | grep coredns/coredns | tr -d '\t')"
 
-http --check-status -b POST \
-	$GITEA_SERVER/api/repos/ambrose/alias/releases \
+RESPONSE="$(http --check-status -b POST \
+	"$GITEA_SERVER/api/v1/repos/ambrose/alias/releases" \
 	Authorization:"Bearer $GITEA_TOKEN" \
 	body="$BODY" \
 	draft:=false \
 	name="$RELEASE" \
 	prerelease:=false \
 	tag_name="$GIT_TAG" \
-	target_commitish="$GIT_COMMIT"
+	target_commitish="$GIT_COMMIT")"
+
+echo "Uploading attachments..."
+
+RELEASE_ID="$(echo "$RESPONSE" | jq .id)"
+
+for m in "${matrix[@]}"; do
+	export GOOS= GOARCH= EXT=
+	export $m
+	filename=coredns_${GOOS}_${GOARCH}${EXT}
+	http --check-status --form -b POST \
+		"$GITEA_SERVER/api/v1/repos/ambrose/alias/releases/$RELEASE_ID/assets" \
+		Authorization:"Bearer $GITEA_TOKEN" \
+		name="$filename" \
+		attachment@"$filename"
+done
