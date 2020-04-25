@@ -40,10 +40,12 @@ git push --tags
 echo "Building coredns..."
 
 export CGO_ENABLED=0
-export GOOS=linux
-export GOARCH=amd64
-
-go build
+GOOS=linux GOARCH=amd64 go build -o coredns_${GOOS}_${GOARCH}
+GOOS=linux GOARCH=arm64 go build -o coredns_${GOOS}_${GOARCH}
+GOOS=linux GOARCH=armv6 go build -o coredns_${GOOS}_${GOARCH}
+GOOS=linux GOARCH=armv7 go build -o coredns_${GOOS}_${GOARCH}
+GOOS=mac GOARCH=amd64 go build -o coredns_${GOOS}_${GOARCH}
+GOOS=windows GOARCH=amd64 go build -o coredns_${GOOS}_${GOARCH}
 
 echo "Uploading release..."
 
