@@ -1,0 +1,17 @@
+example.com {
+	file db2.example.com
+	alias
+}
+. {
+	auto {
+		directory .
+	}
+}
+
+outside.example.com {
+	file db2.outside.example.com
+	alias
+}
+twitter.com {
+	forward . 1.1.1.1 1.0.0.1
+}
