@@ -21,6 +21,9 @@ steps:
     GOARCH: amd64
   commands:
   - cd coredns && go build
+  when:
+    event:
+    - tag
 - name: release
   image: plugins/gitea-release
   settings:
@@ -29,6 +32,7 @@ steps:
       from_secret: gitea_token
     files: coredns/coredns
   when:
-    event: tag
+    event:
+    - tag
 
 # vim: ts=2:sw=2
