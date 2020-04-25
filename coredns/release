@@ -1,0 +1,61 @@
+#!/bin/bash
+
+source gitea_token
+
+set -e
+
+GITEA_SERVER=${GITEA_SERVER:="https://git.makerforce.io"}
+GITEA_TOKEN=${GITEA_TOKEN:=""}
+
+path_to_httpie=$(which http)
+if [ ! -x "$path_to_httpie" ] ; then
+	echo "HTTPie not installed. Please install it at (https://httpie.org/doc#installation)"
+fi
+
+path_to_jq=$(which jq)
+if [ ! -x "$path_to_jq" ] ; then
+	echo "JQ not installed. Please install it at (https://stedolan.github.io/jq/download/)"
+fi
+
+if [ -z $GITEA_TOKEN ]; then
+	echo "Enter Gitea token ($GITEA_SERVER/account/token)"
+	echo -n "> "
+	read GITEA_TOKEN
+	echo
+fi
+
+GIT_COMMIT="$(git rev-parse HEAD)"
+GIT_LAST_TAG="$(git tag -l | tail -n 1)"
+# Increment version
+ver=( ${GIT_LAST_TAG//./ } )
+((ver[2]++))
+GIT_TAG="${ver[0]}.${ver[1]}.${ver[2]}"
+
+echo "Tagging $GIT_TAG..."
+
+git tag "$GIT_TAG" "$GIT_COMMIT"
+git push
+git push --tags
+
+echo "Building coredns..."
+
+export CGO_ENABLED=0
+export GOOS=linux
+export GOARCH=amd64
+
+go build
+
+echo "Uploading release..."
+
+RELEASE="$GIT_TAG"
+BODY="$(cat go.mod | grep coredns/coredns | tr -d '\t')"
+
+http --check-status -b POST \
+	$GITEA_SERVER/api/repos/ambrose/alias/releases \
+	Authorization:"Bearer $GITEA_TOKEN" \
+	body="$BODY" \
+	draft:=false \
+	name="$RELEASE" \
+	prerelease:=false \
+	tag_name="$GIT_TAG" \
+	target_commitish="$GIT_COMMIT"
