@@ -7,6 +7,8 @@ This plugin works only with plugins that produce A or AAAA records alongside the
 
 > Preferrably, this should not be used in favour of the RFC drafts for the new [ANAME](https://tools.ietf.org/html/draft-ietf-dnsop-aname-00) records, but the DNS library used by CoreDNS does not support ANAME records yet. 
 
+Release builds can be found [here](https://git.makerforce.io/ambrose/alias/releases)
+
 ## Syntax
 
 ```
