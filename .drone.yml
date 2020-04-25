@@ -5,10 +5,16 @@ name: default
 steps:
 - name: test
   image: golang:1.14-alpine
+  pull: true
+  environment:
+    CGO_ENABLED: 0
+    GOOS: linux
+    GOARCH: amd64
   commands:
   - cd coredns && go test
 - name: build
   image: golang:1.14-alpine
+  pull: true
   environment:
     CGO_ENABLED: 0
     GOOS: linux
