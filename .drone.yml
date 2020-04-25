@@ -1,0 +1,27 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: test
+  image: golang:1.14-alpine
+  commands:
+  - cd coredns && go test
+- name: build
+  image: golang:1.14-alpine
+  environment:
+  - CGO_ENABLED=0
+  - GOOS=linux
+  - GOARCH=amd64
+  commands:
+  - cd coredns && go build
+- name: release
+  image: plugins/gitea-release
+  settings:
+    base_url: https://git.makerforce.io
+    secrets: [ gitea_token ]
+    files: coredns/coredns
+  when:
+    event: tag
+
+# vim: ts=2:sw=2

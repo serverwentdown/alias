@@ -1,5 +1,5 @@
 
-# alias
+# alias [![Build Status](https://ci.makerforce.io/api/badges/ambrose/alias/status.svg)](https://ci.makerforce.io/ambrose/alias)
 
 The *alias* plugin eliminates CNAME records from zone apex by making the subsequent resolved records look like they belong to the zone apex. This behaves similarily to [CloudFlare's Zone Flattening](https://support.cloudflare.com/hc/en-us/articles/200169056-CNAME-Flattening-RFC-compliant-support-for-CNAME-at-the-root).
 
