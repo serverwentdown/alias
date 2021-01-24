@@ -1,5 +1,5 @@
 
-# alias [![Build Status](https://ci.makerforce.io/api/badges/ambrose/alias/status.svg)](https://ci.makerforce.io/ambrose/alias)
+# alias
 
 The *alias* plugin eliminates CNAME records from zone apex by making the subsequent resolved records look like they belong to the zone apex. This behaves similarily to [CloudFlare's Zone Flattening](https://support.cloudflare.com/hc/en-us/articles/200169056-CNAME-Flattening-RFC-compliant-support-for-CNAME-at-the-root).
 
@@ -7,7 +7,7 @@ This plugin works only with plugins that produce A or AAAA records alongside the
 
 > Preferrably, this should not be used in favour of the RFC drafts for the new [ANAME](https://tools.ietf.org/html/draft-ietf-dnsop-aname-00) records, but the DNS library used by CoreDNS does not support ANAME records yet. 
 
-Release builds can be found [here](https://git.makerforce.io/ambrose/alias/releases)
+Release builds can be found [here](https://github.com/serverwentdown/alias/releases)
 
 ## Syntax
 
