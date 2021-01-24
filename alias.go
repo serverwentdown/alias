@@ -1,12 +1,12 @@
 package alias
 
 import (
+	"context"
+	"math"
+
 	"github.com/coredns/coredns/plugin"
 
 	"github.com/miekg/dns"
-	"math"
-
-	"golang.org/x/net/context"
 )
 
 // Rewrite is plugin to rewrite requests internally before being handled.
